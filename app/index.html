@@ -21,9 +21,9 @@
 			<br>
 			<a href="/auth/twitter">Login to Twitter!</a>
 			<div class="input-group">
-				<input type="text" class="form-control input-lg" value="#">
+				<input type="text" class="form-control input-lg" value="#" ng-model="hashTag">
 				<span class="input-group-btn">
-					<button class="btn btn-lg btn-info" type="button">
+					<button class="btn btn-lg btn-info" type="button" ng-click="trackTweets()">
 						Go!
 					</button>
 				</span>

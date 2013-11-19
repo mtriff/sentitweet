@@ -3,36 +3,27 @@ var app=angular.module('sentiTweets', []);
 app.controller('BrowseCtrl', function($scope, theServer)
 {
 	//$scope.auth=theServer.authorize();
-	
-  console.log('Called BrowseCtrl');
-	$scope.tweets=[
-		{user: {screen_name: 'TestUser'}, text: 'Text of Tweet Here'}
-	];
-
-	var socket=io.connect('http://localhost:8081');
-	window.socket=socket;
-	socket.on('newTweet', function(theTweet)
+	$scope.trackTweets=function()
 	{
-		$scope.tweets.unshift(theTweet);
-		$scope.$apply();
-	});
+		console.log('Called BrowseCtrl');
+		$scope.tweets=[];
 
-	theServer.getTweets();
+		if(typeof socket === 'undefined')
+		{
+			var socket=io.connect('http://localhost:8081');
+			window.socket=socket;
+
+			socket.on('newTweet', function(theTweet)
+			{
+				$scope.tweets.unshift(theTweet);
+				$scope.$apply();
+			});
+		}
+
+		console.log("getTweets with: "+$scope.hashTag);
+		theServer.getTweets($scope.hashTag);
+	};
 });
-
-// function BrowseCtrl($scope)
-// {
-// 	console.log('Called BrowseCtrl');
-// 	$scope.tweets=[{user: {screen_name: 'TestUser'}, text: 'Text of Tweet Here'}];
-
-// 	var socket=io.connect('http://localhost:8081');
-// 	window.socket=socket;
-// 	socket.on('newTweet', function(theTweet)
-// 	{
-// 		$scope.tweets.push(theTweet);
-// 		$scope.$apply();
-// 	});
-// }
 
  app.factory('theServer', function($http, $q) {
 	return {
@@ -47,14 +38,15 @@ app.controller('BrowseCtrl', function($scope, theServer)
 				deferred.reject();
 			});
 			return deferred.promise;		},
-		getTweets: function()
+		getTweets: function(toTrack)
 		{
 			var deferred=$q.defer();
-			$http.get('/getTweets').success(function(data) {
+			$http.post('/getTweets', {data: toTrack}).success(function(data) {
 				console.log(data);
 				deferred.resolve(data);
 			}).error(function()
 			{
+				alert('You must log in first.');
 				deferred.reject();
 			});
 			return deferred.promise;

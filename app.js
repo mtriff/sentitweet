@@ -1,7 +1,7 @@
+
 /**
  * Module dependencies.
  */
-
 var express=require('express');
 var http=require('http');
 var path=require('path');
@@ -12,6 +12,19 @@ var io=require('socket.io').listen(8081, {log: false});
 
 var app=express();
 
+
+//Custom middleware to replace body parser
+function rawBody(req, res, next) {
+  req.setEncoding('utf8');
+  req.rawBody = '';
+  req.on('data', function(chunk) {
+  req.rawBody += chunk;
+  });
+  req.on('end', function(){
+  next();
+  });
+}
+
 // Environment setup
 app.set('port', process.env.PORT || 8080);
 app.set('views', __dirname + '/app');
@@ -20,7 +33,8 @@ app.set('view engine', 'ejs');
 //app.set('view options', {layout: false});
 app.use(express.favicon());
 app.use(express.logger('dev'));
-app.use(express.bodyParser());
+app.use(rawBody);
+//app.use(express.bodyParser());
 app.use(express.methodOverride());
 app.use(express.cookieParser('anotherSecret'));
 app.use(express.session());
@@ -39,14 +53,16 @@ app.configure(function() {
 });
 
 // Routes
-app.get('/getTweets', function(req, res)
+app.post('/getTweets', function(req, res)
 {
 	console.log("getTweets Requested\n");
+	//console.log("Body is: %j", req.rawBody);
 	if(req.session.oauth)
 	{
 		var twit=new twitter({		
 			consumer_key: "jfy4Y6ucET5LZLXDTyncLw",
 			//Consumer secret goes here:
+			consumer_secret: myConsumerSecret,
 			access_token_key: req.session.oauth.access_token,
 			access_token_secret: req.session.oauth.access_token_secret
 		});
@@ -56,26 +72,26 @@ app.get('/getTweets', function(req, res)
 		console.log(err, data);
 	});
 
+	var body=JSON.parse(req.rawBody);
+
 	twit.stream(
 		'statuses/filter',
-		{track:["happy"]},
+		{track:[body.data]},
 		function(stream) {
 			stream.on('data', function(data) {
-				console.log(data.text);
+				//console.log(data.text);
 				io.sockets.emit('newTweet', data)
-				//var testData=[{"id":"tweet1"}, ];
-
-				//res.send(testData);
 			});
 		});
 });
 
-//Twitter OAuth
+/********************TWITTER OAUTH****************************/
 var oa=new OAuth(
 		"https://api.twitter.com/oauth/request_token",
     "https://api.twitter.com/oauth/access_token",
     "jfy4Y6ucET5LZLXDTyncLw",
     //Consumer secret goes here:
+    myConsumerSecret,
     "1.0",
     "http://localhost:8080/auth/twitter/callback",
     "HMAC-SHA1"
@@ -122,6 +138,7 @@ app.get('/auth/twitter/callback', function(req, res, next){
 				var twit=new twitter({
 					consumer_key: "jfy4Y6ucET5LZLXDTyncLw",
 					//Consumer secret goes here
+					consumer_secret: myConsumerSecret,
 					access_token_key: req.session.oauth.access_token,
 					access_token_secret: req.session.oauth.access_token_secret
 				});
@@ -130,12 +147,13 @@ app.get('/auth/twitter/callback', function(req, res, next){
 					console.log(err,data);
 					res.redirect('/');
 				})
-
 			}
 		});
 	} else
 		next(new Error("Something very wrong happened here."));
 });
+
+/******************END TWITTER OAUTH*******************************/
 
 //Start our server
 http.createServer(app).listen(app.get('port'), function(){
