@@ -12,7 +12,11 @@ app.controller('BrowseCtrl', function($scope, theServer)
 		{
 			var socket=io.connect('http://localhost:8081');
 			window.socket=socket;
+		}
 
+		if(socket.listeners('newTweet').length==0)
+		{
+			console.log('Adding a listener');
 			socket.on('newTweet', function(theTweet)
 			{
 				$scope.tweets.unshift(theTweet);
@@ -23,6 +27,11 @@ app.controller('BrowseCtrl', function($scope, theServer)
 		console.log("getTweets with: "+$scope.hashTag);
 		theServer.getTweets($scope.hashTag);
 	};
+
+	$scope.stopTracking=function()
+	{
+		socket.removeAllListeners('newTweet');
+	}
 });
 
  app.factory('theServer', function($http, $q) {
