@@ -1,3 +1,4 @@
+//var myConsumerSecret goes up here
 
 /**
  * Module dependencies.
@@ -9,6 +10,7 @@ var util=require('util');
 var OAuth=require('oauth').OAuth;
 var twitter=require('ntwitter');
 var io=require('socket.io').listen(8081, {log: false});
+var sentiment=require('sentiment');
 
 var app=express();
 
@@ -80,7 +82,17 @@ app.post('/getTweets', function(req, res)
 		function(stream) {
 			stream.on('data', function(data) {
 				//console.log(data.text);
-				io.sockets.emit('newTweet', data)
+
+				//Calculate sentiment
+				sentiment(data.text, function(err, result){
+						data.sentiment=result.score;
+						console.log("Results:");
+						console.dir(result);
+						console.log(data.sentiment);
+						io.sockets.emit('newTweet', data)
+				});
+
+
 			});
 		});
 });
