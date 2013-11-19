@@ -1,13 +1,15 @@
 <!DOCTYPE html>
-<html ng-app>
+<html ng-app="sentiTweets">
 <head>
 	<link rel="stylesheet" href="common/twitterBootstrap/bootstrap.css">
 	<link href="common/twitterBootstrap/bootstrap-theme.css">
 	<script rel="stylesheet" src="common/jquery/jquery-1.10.2.min.js"></script>
 	<script src="common/twitterBootstrap/bootstrap.js"></script>
-	<script src="common/angularjs/angular.js"></script>
+	<!--script src="common/angularjs/angular.js"></script-->
+   <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.3/angular.min.js"></script>
+	<script src="common/sentiTweet/sentiTweet.js"></script>
 </head>
-<body>
+<body ng-controller="BrowseCtrl">
 	<div class="container">
 		<div class="header">
 			<h1>SentiTweet</h1>
@@ -25,10 +27,12 @@
 			</div>
 		</div>
 
-		<div id="tweetStream">
+	</div>
+			<div id="tweetStream">
+    <ul>
+      <pre ng-repeat="t in tweets">{{t.id}}</pre>
+    </ul>
 
 		</div>
-
-	</div>
 </body>
 </html>

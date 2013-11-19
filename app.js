@@ -29,8 +29,11 @@ app.configure(function() {
 // Routes
 app.get('/getTweets', function(req, res)
 {
-	console.log("Nothing to see here..\n");
-	res.send('You made it!');
+	console.log("getTweets Requested\n");
+
+	var testData=[{"id":"tweet1"}, {"id":"tweet2"}];
+
+	res.send(JSON.stringify(testData));
 });
 
 http.createServer(app).listen(app.get('port'), function(){
