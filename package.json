@@ -9,6 +9,8 @@
     "socket.io": "*",
     "stylus": "*",
     "express": "*",
-    "ejs":"*"
+    "ejs":"*",
+    "ntwitter":"*",
+    "oauth":"*"
   }
 }

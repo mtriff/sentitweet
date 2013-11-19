@@ -7,6 +7,7 @@
 	<script src="common/twitterBootstrap/bootstrap.js"></script>
 	<!--script src="common/angularjs/angular.js"></script-->
    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.3/angular.min.js"></script>
+   <script type="text/javascript" src="common/socketIO/socket.io.js"></script>
 	<script src="common/sentiTweet/sentiTweet.js"></script>
 </head>
 <body ng-controller="BrowseCtrl">
@@ -17,10 +18,12 @@
 
 		<div class="jumbotron">
 			<p class="lead">Enter a hashtag to view tweets!</p>
+			<br>
+			<a href="/auth/twitter">Login to Twitter!</a>
 			<div class="input-group">
-				<input type="text" class="form-control input-lg" value="#">
+				<input type="text" class="form-control input-lg" value="#" ng-model="hashTag">
 				<span class="input-group-btn">
-					<button class="btn btn-lg btn-info" type="button">
+					<button class="btn btn-lg btn-info" type="button" ng-click="trackTweets()">
 						Go!
 					</button>
 				</span>
@@ -30,7 +33,7 @@
 	</div>
 			<div id="tweetStream">
     <ul>
-      <pre ng-repeat="t in tweets">{{t.id}}</pre>
+      <pre ng-repeat="t in tweets"><strong>{{t.user.screen_name}}</strong><br>{{t.text}}</pre>
     </ul>
 
 		</div>

@@ -1,12 +1,29 @@
+
 /**
  * Module dependencies.
  */
-
 var express=require('express');
 var http=require('http');
 var path=require('path');
+var util=require('util');
+var OAuth=require('oauth').OAuth;
+var twitter=require('ntwitter');
+var io=require('socket.io').listen(8081, {log: false});
 
 var app=express();
+
+
+//Custom middleware to replace body parser
+function rawBody(req, res, next) {
+  req.setEncoding('utf8');
+  req.rawBody = '';
+  req.on('data', function(chunk) {
+  req.rawBody += chunk;
+  });
+  req.on('end', function(){
+  next();
+  });
+}
 
 // Environment setup
 app.set('port', process.env.PORT || 8080);
@@ -16,26 +33,129 @@ app.set('view engine', 'ejs');
 //app.set('view options', {layout: false});
 app.use(express.favicon());
 app.use(express.logger('dev'));
-app.use(express.bodyParser());
+app.use(rawBody);
+//app.use(express.bodyParser());
 app.use(express.methodOverride());
+app.use(express.cookieParser('anotherSecret'));
+app.use(express.session());
 app.use(app.router);
+app.use(express.session({secret:"aSecret"}));
 
 app.use(express.static(path.join(__dirname, 'app')));
 
+if ('development' == app.get('env')) {
+    app.use(express.errorHandler());
+}
+
+//Permit statically loaded pages
 app.configure(function() {
     app.use(express.static(__dirname + '/app'));
 });
 
 // Routes
-app.get('/getTweets', function(req, res)
+app.post('/getTweets', function(req, res)
 {
 	console.log("getTweets Requested\n");
+	//console.log("Body is: %j", req.rawBody);
+	if(req.session.oauth)
+	{
+		var twit=new twitter({		
+			consumer_key: "jfy4Y6ucET5LZLXDTyncLw",
+			//Consumer secret goes here:
+			consumer_secret: myConsumerSecret,
+			access_token_key: req.session.oauth.access_token,
+			access_token_secret: req.session.oauth.access_token_secret
+		});
+	}
 
-	var testData=[{"id":"tweet1"}, {"id":"tweet2"}];
+	twit.verifyCredentials(function(err,data){
+		console.log(err, data);
+	});
 
-	res.send(JSON.stringify(testData));
+	var body=JSON.parse(req.rawBody);
+
+	twit.stream(
+		'statuses/filter',
+		{track:[body.data]},
+		function(stream) {
+			stream.on('data', function(data) {
+				//console.log(data.text);
+				io.sockets.emit('newTweet', data)
+			});
+		});
 });
 
+/********************TWITTER OAUTH****************************/
+var oa=new OAuth(
+		"https://api.twitter.com/oauth/request_token",
+    "https://api.twitter.com/oauth/access_token",
+    "jfy4Y6ucET5LZLXDTyncLw",
+    //Consumer secret goes here:
+    myConsumerSecret,
+    "1.0",
+    "http://localhost:8080/auth/twitter/callback",
+    "HMAC-SHA1"
+	);
+
+app.get('/auth/twitter', function(req, res){
+	oa.getOAuthRequestToken(function(error, oauth_token, oauth_token_secret, results){
+		if(error)
+		{
+			console.log(error)
+			res.send('Log In Failed.');
+		}
+		else
+		{
+			req.session.oauth={};
+			req.session.oauth.token=oauth_token;
+			console.log('OAuth token:'+req.session.oauth.token);
+			req.session.oauth.token_secret=oauth_token_secret;
+			console.log('OAuth Token Secret:'+req.session.oauth.token_secret);
+			res.redirect('https://twitter.com/oauth/authenticate?oauth_token='+oauth_token);
+		}
+	});
+});
+
+app.get('/auth/twitter/callback', function(req, res, next){
+	if(req.session.oauth) {
+		req.session.oauth.verifier=req.query.oauth_verifier;
+		var oauth=req.session.oauth;
+
+		oa.getOAuthAccessToken(oauth.token,oauth.token_secret, oauth.verifier,
+		function(error, oauth_access_token, oauth_access_token_secret, results)
+		{
+			if(error){
+				console.log("Error in callback");
+			 	console.log(error);
+			 	res.send("Error in Twitter Callback on Log in.");
+			 }
+			 else
+			 {
+				req.session.oauth.access_token=oauth_access_token;
+				req.session.oauth.access_token_secret=oauth_access_token_secret;
+				console.log("HERE'S THE RESULTS:")
+				console.log(results);
+				var twit=new twitter({
+					consumer_key: "jfy4Y6ucET5LZLXDTyncLw",
+					//Consumer secret goes here
+					consumer_secret: myConsumerSecret,
+					access_token_key: req.session.oauth.access_token,
+					access_token_secret: req.session.oauth.access_token_secret
+				});
+
+				twit.verifyCredentials(function(err, data){
+					console.log(err,data);
+					res.redirect('/');
+				})
+			}
+		});
+	} else
+		next(new Error("Something very wrong happened here."));
+});
+
+/******************END TWITTER OAUTH*******************************/
+
+//Start our server
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });
