@@ -29,7 +29,30 @@ app.controller('BrowseCtrl', function($scope, theServer)
 		isQuiz=true;
 	}
 
-	//$scope.auth=theServer.authorize();
+	/*Audio Augmentation*/
+	url=new Array();
+	url[10]=['assets/sounds/c021.mp3','assets/sounds/c021.ogg'];
+	url[9]=['assets/sounds/c020.mp3','assets/sounds/c020.ogg'];
+	url[8]=['assets/sounds/c018.mp3','assets/sounds/c018.ogg'];
+	url[7]=['assets/sounds/c017.mp3','assets/sounds/c017.ogg'];
+	url[6]=['assets/sounds/c016.mp3','assets/sounds/c016.ogg'];
+	url[5]=['assets/sounds/c015.mp3','assets/sounds/c015.ogg'];
+	url[4]=['assets/sounds/c014.mp3','assets/sounds/c014.ogg'];
+	url[3]=['assets/sounds/c013.mp3','assets/sounds/c013.ogg'];
+	url[2]=['assets/sounds/c012.mp3','assets/sounds/c012.ogg'];
+	url[1]=['assets/sounds/c011.mp3','assets/sounds/c011.ogg'];
+	url[-1]=['assets/sounds/c010.mp3','assets/sounds/c010.ogg'];
+	url[-2]=['assets/sounds/c09.mp3','assets/sounds/c09.ogg'];
+	url[-3]=['assets/sounds/c008.mp3','assets/sounds/c008.ogg'];
+	url[-4]=['assets/sounds/c007.mp3','assets/sounds/c007.ogg'];
+	url[-5]=['assets/sounds/c006.mp3','assets/sounds/c006.ogg'];
+	url[-6]=['assets/sounds/c005.mp3','assets/sounds/c005.ogg'];
+	url[-7]=['assets/sounds/c004.mp3','assets/sounds/c004.ogg'];
+	url[-8]=['assets/sounds/c003.mp3','assets/sounds/c003.ogg'];
+	url[-9]=['assets/sounds/c002.mp3','assets/sounds/c002.ogg'];
+	url[-10]=['assets/sounds/c001.mp3','assets/sounds/c001.ogg'];
+	
+	/* Controls Receiving Tweets */
 	$scope.trackTweets=function()
 	{
 		$("html, body").scrollTop($("#tweetStream").offset().top);
@@ -49,6 +72,7 @@ app.controller('BrowseCtrl', function($scope, theServer)
 			{
 				isQuiz=false;
 				console.log(theTweet);
+				var sound=new Howl({urls: url[theTweet.sentiment]}).play();
 				$scope.tweets.unshift(theTweet);
 				$scope.$apply();
 			});

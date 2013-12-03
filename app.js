@@ -112,21 +112,13 @@ app.post('/getQuiz', function(req, res){
   	var baseNow=Date.now();
   	for(var i=0; i<tweets.length; i++)
   	{
-  		// async.whilst(
-  		// 	function(){ return Date.now()-baseNow>tweets[i].time-baseTime },
-  		// 	function(callback){
-  		// 		setTimeout(callback, 100);
-  		// 	},
-  		// 	function(err){
-				//  	io.sockets.emit('newTweet', tweets[i]);	
-  		// 	}
-  		// );
-  		//setTimeout(sendTweet, tweets[i].time-baseTime);
-
+  		/*Emit each tweet to the caller on specified time
+  		augmented by an offset of 20msec per tweet, to allow
+  		the page to render at a reasonable rate */
   		(function(data) {
 			  setTimeout(function() {
 			  	io.sockets.emit('newTweet', data)
-			  }, data.time+(20*i)-baseTime);
+			  }, data.time+(50*i)-baseTime);
 			 })(tweets[i]);
   	}
   	console.log("End of For loop");

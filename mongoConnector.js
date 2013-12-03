@@ -12,7 +12,7 @@ TweetsProvider = function(host, port) {
 
 // Gets the relevant collection from database
 TweetsProvider.prototype.getCollection= function(query, callback) {
-  this.db.collection('ticats', function(error, tweet_collection){
+  this.db.collection('riders', function(error, tweet_collection){
     if( error ) callback(error);
     else callback(null, tweet_collection);
   });

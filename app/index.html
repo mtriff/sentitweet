@@ -3,12 +3,13 @@
 <head>
 	<link rel="stylesheet" href="common/twitterBootstrap/bootstrap.css">
 	<link href="common/twitterBootstrap/bootstrap-theme.css">
-	<link rel="stylesheet" href="common/sentiTweet/sentiTweet-visualAug.css">
+	<!--link rel="stylesheet" href="common/sentiTweet/sentiTweet-visualAug.css"-->
 
 	<script rel="stylesheet" src="common/jquery/jquery-1.10.2.min.js"></script>
 	<script src="common/twitterBootstrap/bootstrap.js"></script>
 	<!--script src="common/angularjs/angular.js"></script-->
    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.3/angular.min.js"></script>
+   <script src="common/howlerjs/howler.js"></script>
    <script type="text/javascript" src="common/socketIO/socket.io.js"></script>
 	<script src="common/sentiTweet/sentiTweet.js"></script>
 </head>
@@ -54,7 +55,7 @@
 	</div>
 			<div id="tweetStream">
     <ul>
-      <pre ng-repeat="t in tweets" sentiment={{t.sentiment}}><strong>{{t.user.screen_name}} : {{t.sentiment}}</strong><br>{{t.text}}</pre>
+      <pre ng-repeat="t in tweets" sentiment={{t.sentiment}}><strong>{{t.user.screen_name}}</strong><br>{{t.text}}</pre>
     </ul>
 
 		</div>
