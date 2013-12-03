@@ -29,7 +29,24 @@ app.controller('BrowseCtrl', function($scope, theServer)
 		isQuiz=true;
 	}
 
+	/*Visual Augmentation*/
+	var visual=true;
+
+	$scope.visAug=function(sentiment)
+	{
+		if(visual)
+		{
+			return sentiment;
+		}
+		else
+		{
+			return 0;
+		}
+	}
+
 	/*Audio Augmentation*/
+	var audio=false;
+
 	url=new Array();
 	url[10]=['assets/sounds/c021.mp3','assets/sounds/c021.ogg'];
 	url[9]=['assets/sounds/c020.mp3','assets/sounds/c020.ogg'];
@@ -42,7 +59,7 @@ app.controller('BrowseCtrl', function($scope, theServer)
 	url[2]=['assets/sounds/c012.mp3','assets/sounds/c012.ogg'];
 	url[1]=['assets/sounds/c011.mp3','assets/sounds/c011.ogg'];
 	url[-1]=['assets/sounds/c010.mp3','assets/sounds/c010.ogg'];
-	url[-2]=['assets/sounds/c09.mp3','assets/sounds/c09.ogg'];
+	url[-2]=['assets/sounds/c009.mp3','assets/sounds/c009.ogg'];
 	url[-3]=['assets/sounds/c008.mp3','assets/sounds/c008.ogg'];
 	url[-4]=['assets/sounds/c007.mp3','assets/sounds/c007.ogg'];
 	url[-5]=['assets/sounds/c006.mp3','assets/sounds/c006.ogg'];
@@ -72,7 +89,12 @@ app.controller('BrowseCtrl', function($scope, theServer)
 			{
 				isQuiz=false;
 				console.log(theTweet);
-				var sound=new Howl({urls: url[theTweet.sentiment]}).play();
+				
+				if(audio)
+				{
+					var sound=new Howl({urls: url[theTweet.sentiment]}).play();
+				}
+
 				$scope.tweets.unshift(theTweet);
 				$scope.$apply();
 			});
