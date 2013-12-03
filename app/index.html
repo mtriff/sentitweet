@@ -14,13 +14,18 @@
 	<div class="container">
 		<div class="header">
 			<h1>SentiTweet</h1>
+			<span class="input-group-btn">
+				<button class="btn" type="button" ng-click="showStream()">Stream</button>
+				<button class="btn" type="button" ng-click="showQuiz()">Quiz</button>
+			</span>
 		</div>
-
+		<br>
 		<div class="jumbotron">
-			<p class="lead">Enter a hashtag to view tweets!</p>
 			<br>
-			<a href="/auth/twitter">Login to Twitter!</a>
-			<div class="input-group">
+			<div id="streaming" class="input-group" ng-show="stream()">
+				<p class="lead">Enter a hashtag to view tweets!</p>
+				<a href="/auth/twitter">Login to Twitter!</a>
+				<br>
 				<input type="text" class="form-control input-lg" value="#" ng-model="hashTag">
 				<span class="input-group-btn">
 					<button class="btn btn-lg btn-info" type="button" ng-click="trackTweets()">
@@ -31,7 +36,18 @@
 					</button>
 				</span>
 			</div>
-		</div>
+
+
+			<div id="quiz1" ng-hide="stream()">
+				<p>You will be shown a stream of approximately 15 seconds worth of tweets, as they would appear in real time, your goal is to best identify the overall (average) sentiment of the group of tweets.</p>
+				<br>
+				<p>You will rank the tweets on a scale of one to ten, with 1 being very negative, 10 being very positive, and 5 being neutral.</p>
+				<br>
+				<p>You will be shown the groups of tweets with three different augmentations, text-only, text+visual, and text+audio</p>
+				<button class="btn btn-success" ng-click="trackTweets()">Begin</button>
+			</div>
+
+
 
 	</div>
 			<div id="tweetStream">

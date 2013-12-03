@@ -12,6 +12,7 @@
     "ejs":"*",
     "ntwitter":"*",
     "oauth":"*",
-    "sentiment":"*"
+    "sentiment":"*",
+    "file":"*"
   }
 }

@@ -2,6 +2,25 @@ var app=angular.module('sentiTweets', []);
 
 app.controller('BrowseCtrl', function($scope, theServer)
 {
+
+	/*Controls which menu is showing*/
+	var isStreaming=true;
+
+	$scope.stream=function()
+	{
+		return isStreaming;
+	}
+
+	$scope.showQuiz=function()
+	{
+		isStreaming=false;
+	}
+
+	$scope.showStream=function()
+	{
+		isStreaming=true;
+	}
+
 	//$scope.auth=theServer.authorize();
 	$scope.trackTweets=function()
 	{
@@ -24,8 +43,16 @@ app.controller('BrowseCtrl', function($scope, theServer)
 			});
 		}
 
-		console.log("getTweets with: "+$scope.hashTag);
-		theServer.getTweets($scope.hashTag);
+		if(isStreaming)
+		{
+			console.log("getTweets with: "+$scope.hashTag);
+			theServer.getTweets($scope.hashTag);
+		}
+		else
+		{
+			console.log("getQuiz");
+			theServer.getQuiz(1);
+		}
 	};
 
 	$scope.stopTracking=function()
@@ -56,6 +83,18 @@ app.controller('BrowseCtrl', function($scope, theServer)
 			}).error(function()
 			{
 				alert('You must log in first.');
+				deferred.reject();
+			});
+			return deferred.promise;
+		},
+		getQuiz: function(number)
+		{
+			var deferred=$q.defer();
+			$http.post('/getQuiz', {data: 1}).success(function(data) {
+				console.log(data);
+				deferred.resolve(data)
+			}).error(function()
+			{
 				deferred.reject();
 			});
 			return deferred.promise;

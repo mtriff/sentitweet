@@ -1,3 +1,4 @@
+var myConsumerSecret="j9wmVOLlSUrRlvucX19oYvhFrWBFnePBqewABrjmbcU";
 //var myConsumerSecret goes up here
 
 /**
@@ -95,6 +96,11 @@ app.post('/getTweets', function(req, res)
 
 			});
 		});
+});
+
+app.post('/getQuiz', function(req, res){
+	console.log("Got that quiz");
+	io.sockets.emit("Got that quiz!");
 });
 
 /********************TWITTER OAUTH****************************/
