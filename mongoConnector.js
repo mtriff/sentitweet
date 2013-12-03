@@ -26,7 +26,7 @@ TweetsProvider.prototype.findAll = function(query, callback) {
         // Parse the JSON formated string into a true JSON object
 	parsedQuery=JSON.parse(query);
         // Pass JSON object to mongo database with find() call
-        tweet_collection.find(parsedQuery).sort({"time":-1}).limit(5).toArray(function(error, results) {
+        tweet_collection.find(parsedQuery).sort({"time":-1}).limit(100).toArray(function(error, results) {
           if( error ) callback(error)
           else callback(null, results)
         });
