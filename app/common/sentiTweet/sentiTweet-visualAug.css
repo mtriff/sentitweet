@@ -1,0 +1,97 @@
+/*Visual Styles to Augment tweet output*/
+pre[sentiment="10"]
+{
+	background-color: #0DFF00
+}
+
+pre[sentiment="9"]
+{
+	background-color: #16F70A
+}
+
+pre[sentiment="8"]
+{
+	background-color: #1CED11
+}
+pre[sentiment="7"]
+{
+	background-color: #28E81E
+}
+pre[sentiment="6"]
+{
+	background-color: #19FA3B
+}
+
+pre[sentiment="5"]
+{
+	background-color: #19FA77
+}
+
+pre[sentiment="4"]
+{
+	background-color: #38F587
+}
+
+pre[sentiment="3"]
+{
+	background-color: #55FA9A 
+}
+
+pre[sentiment="2"]
+{
+	background-color: #9FF8C4	
+}
+
+pre[sentiment="1"]
+{
+	background-color: #A8F7C9
+}
+
+/*Negative*/
+pre[sentiment="-10"]
+{
+	background-color: #0006B3
+}
+
+pre[sentiment="-9"]
+{
+	background-color: #0B12DE
+}
+
+pre[sentiment="-8"]
+{
+	background-color: #0922E3
+}
+pre[sentiment="-7"]
+{
+	background-color: #0F29F2
+}
+pre[sentiment="-6"]
+{
+	background-color: #2F62ED
+}
+
+pre[sentiment="-5"]
+{
+	background-color: #2F62ED
+}
+
+pre[sentiment="-4"]
+{
+	background-color: #187FD9
+}
+
+pre[sentiment="-3"]
+{
+	background-color: #3096F0
+}
+
+pre[sentiment="-2"]
+{
+	background-color: #47A4F5
+}
+
+pre[sentiment="-1"]
+{
+	background-color: #7FBEF5
+}

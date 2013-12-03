@@ -1,3 +1,4 @@
+var myConsumerSecret="j9wmVOLlSUrRlvucX19oYvhFrWBFnePBqewABrjmbcU";
 //var myConsumerSecret goes up here
 
 /**
@@ -11,9 +12,12 @@ var OAuth=require('oauth').OAuth;
 var twitter=require('ntwitter');
 var io=require('socket.io').listen(8081, {log: false});
 var sentiment=require('sentiment');
+var TweetsProvider=require('./mongoConnector.js').TweetsProvider;
+var async=require('async');
 
 var app=express();
 
+var mongoGrab=new TweetsProvider('127.0.0.1', 27017);
 
 //Custom middleware to replace body parser
 function rawBody(req, res, next) {
@@ -95,6 +99,35 @@ app.post('/getTweets', function(req, res)
 
 			});
 		});
+});
+
+app.post('/getQuiz', function(req, res){
+	console.log("Got that quiz");
+
+  var query="{\"sentiment\": {\"$ne\": 0}}";
+  query=JSON.parse(query);
+  mongoGrab.findAll(JSON.stringify(query), function(error, tweets){
+  	//console.log("Found something: ", tweets);
+  	var baseTime=tweets[0].time;
+  	var baseNow=Date.now();
+  	for(var i=0; i<tweets.length; i++)
+  	{
+  		/*Emit each tweet to the caller on specified time
+  		augmented by an offset of 20msec per tweet, to allow
+  		the page to render at a reasonable rate */
+  		(function(data, length,curr) {
+			  setTimeout(function() {
+			  	io.sockets.emit('newTweet', data)
+			  	if(curr==length-1)
+			  	{
+			  		console.log("DONE THIS QUIZ");
+			  		io.sockets.emit('doneQuiz', {});
+			  	}
+			  }, data.time+(50*i)-baseTime);
+			 })(tweets[i],tweets.length,i);
+  	}
+  	
+  });
 });
 
 /********************TWITTER OAUTH****************************/
