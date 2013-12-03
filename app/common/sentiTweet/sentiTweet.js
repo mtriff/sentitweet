@@ -5,25 +5,34 @@ app.controller('BrowseCtrl', function($scope, theServer)
 
 	/*Controls which menu is showing*/
 	var isStreaming=true;
+	var isQuiz=false;
 
 	$scope.stream=function()
 	{
 		return isStreaming;
 	}
 
+	$scope.quiz=function()
+	{
+		return isQuiz;
+	}
+
 	$scope.showQuiz=function()
 	{
 		isStreaming=false;
+		isQuiz=true;
 	}
 
 	$scope.showStream=function()
 	{
 		isStreaming=true;
+		isQuiz=true;
 	}
 
 	//$scope.auth=theServer.authorize();
 	$scope.trackTweets=function()
 	{
+		$("html, body").scrollTop($("#tweetStream").offset().top);
 		console.log('Called BrowseCtrl');
 		$scope.tweets=[];
 
@@ -38,6 +47,7 @@ app.controller('BrowseCtrl', function($scope, theServer)
 			console.log('Adding a listener');
 			socket.on('newTweet', function(theTweet)
 			{
+				isQuiz=false;
 				console.log(theTweet);
 				$scope.tweets.unshift(theTweet);
 				$scope.$apply();

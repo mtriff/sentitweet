@@ -15,6 +15,7 @@
     "sentiment":"*",
     "file":"*",
     "line-by-line":"*",
-    "mongodb":"*"
+    "mongodb":"*",
+    "async":"*"
   }
 }

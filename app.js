@@ -13,7 +13,7 @@ var twitter=require('ntwitter');
 var io=require('socket.io').listen(8081, {log: false});
 var sentiment=require('sentiment');
 var TweetsProvider=require('./mongoConnector.js').TweetsProvider;
-
+var async=require('async');
 
 var app=express();
 
@@ -107,14 +107,30 @@ app.post('/getQuiz', function(req, res){
   var query="{\"sentiment\": {\"$ne\": 0}}";
   query=JSON.parse(query);
   mongoGrab.findAll(JSON.stringify(query), function(error, tweets){
-  	console.log("Found something: ", tweets);
+  	//console.log("Found something: ", tweets);
+  	var baseTime=tweets[0].time;
+  	var baseNow=Date.now();
   	for(var i=0; i<tweets.length; i++)
   	{
-  		io.sockets.emit('newTweet', tweets[i]);
+  		// async.whilst(
+  		// 	function(){ return Date.now()-baseNow>tweets[i].time-baseTime },
+  		// 	function(callback){
+  		// 		setTimeout(callback, 100);
+  		// 	},
+  		// 	function(err){
+				//  	io.sockets.emit('newTweet', tweets[i]);	
+  		// 	}
+  		// );
+  		//setTimeout(sendTweet, tweets[i].time-baseTime);
+
+  		(function(data) {
+			  setTimeout(function() {
+			  	io.sockets.emit('newTweet', data)
+			  }, data.time+(20*i)-baseTime);
+			 })(tweets[i]);
   	}
+  	console.log("End of For loop");
   });
-
-
 });
 
 /********************TWITTER OAUTH****************************/
