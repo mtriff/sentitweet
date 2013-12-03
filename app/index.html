@@ -47,13 +47,30 @@
 				<p>You will rank the tweets on a scale of one to ten, with 1 being very negative, 10 being very positive, and 5 being neutral.</p>
 				<br>
 				<p>You will be shown the groups of tweets with three different augmentations, text-only, text+visual, and text+audio</p>
+				<button class="btn btn-success" ng-click="trackTweets()">Begin</button>
 			</div>
 
-				<button class="btn btn-success" ng-click="trackTweets()">Begin</button>
-
+			<div id="answers" ng-show="answers()">
+				<span class="label label-primary">Negative</span>
+				<div class="btn-group">
+				  <button type="button" class="btn btn-default">1</button>
+				  <button type="button" class="btn btn-default">2</button>
+				  <button type="button" class="btn btn-default">3</button>
+				  <button type="button" class="btn btn-default">4</button>
+				  <button type="button" class="btn btn-default">5</button>
+				  <button type="button" class="btn btn-default">6</button>
+				  <button type="button" class="btn btn-default">7</button>
+				  <button type="button" class="btn btn-default">8</button>
+				  <button type="button" class="btn btn-default">9</button>
+				  <button type="button" class="btn btn-default">10</button>
+				</div>
+				<span class="label label-success">Positive</span>
+				<br>
+				<button class="btn btn-success" ng-click="trackTweets()">Next Trial</button>
+			</div>
 
 	</div>
-			<div id="tweetStream">
+			<div id="tweetStream" ng-show="tweetsDiv()">
     <ul>
       <pre ng-repeat="t in tweets" sentiment={{visAug(t.sentiment)}}><strong>{{t.user.screen_name}}</strong><br>{{t.text}}</pre>
     </ul>

@@ -4,8 +4,10 @@ app.controller('BrowseCtrl', function($scope, theServer)
 {
 
 	/*Controls which menu is showing*/
-	var isStreaming=true;
-	var isQuiz=false;
+	var isStreaming=true; //Prompt for the user to browse tweets
+	var isQuiz=false; //Prompt to start the testing
+	var isTweets=true; //Div showing all of the tweets
+	var isAnswers=false; //Div prompting user to enter their answers
 
 	$scope.stream=function()
 	{
@@ -17,16 +19,46 @@ app.controller('BrowseCtrl', function($scope, theServer)
 		return isQuiz;
 	}
 
+	$scope.tweetsDiv=function()
+	{
+		return isTweets;
+	}
+
+	$scope.answers=function()
+	{
+		return isAnswers;
+	}
+
 	$scope.showQuiz=function()
 	{
 		isStreaming=false;
 		isQuiz=true;
+		isTweets=true;
+		isAnswers=false;
 	}
 
 	$scope.showStream=function()
 	{
 		isStreaming=true;
-		isQuiz=true;
+		isQuiz=false;
+		isTweets=true;
+		isAnswers=false;
+	}
+
+	$scope.showAnswers=function()
+	{
+		isStreaming=false;
+		isTweets=false;
+		isQuiz=false;
+		isAnswers=true;
+	}
+
+	$scope.showTweetsDiv=function()
+	{
+		isStreaming=false;
+		isTweets=true;
+		isQuiz=false;
+		isAnswers=false;
 	}
 
 	/*Visual Augmentation*/
@@ -88,6 +120,7 @@ app.controller('BrowseCtrl', function($scope, theServer)
 			socket.on('newTweet', function(theTweet)
 			{
 				isQuiz=false;
+				$scope.showTweetsDiv();
 				console.log(theTweet);
 				
 				if(audio)
@@ -96,6 +129,12 @@ app.controller('BrowseCtrl', function($scope, theServer)
 				}
 
 				$scope.tweets.unshift(theTweet);
+				$scope.$apply();
+			});
+
+			socket.on('doneQuiz', function(data)
+			{
+				$scope.showAnswers();
 				$scope.$apply();
 			});
 		}

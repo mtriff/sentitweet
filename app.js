@@ -115,13 +115,18 @@ app.post('/getQuiz', function(req, res){
   		/*Emit each tweet to the caller on specified time
   		augmented by an offset of 20msec per tweet, to allow
   		the page to render at a reasonable rate */
-  		(function(data) {
+  		(function(data, length,curr) {
 			  setTimeout(function() {
 			  	io.sockets.emit('newTweet', data)
+			  	if(curr==length-1)
+			  	{
+			  		console.log("DONE THIS QUIZ");
+			  		io.sockets.emit('doneQuiz', {});
+			  	}
 			  }, data.time+(50*i)-baseTime);
-			 })(tweets[i]);
+			 })(tweets[i],tweets.length,i);
   	}
-  	console.log("End of For loop");
+  	
   });
 });
 
