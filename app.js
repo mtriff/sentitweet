@@ -12,9 +12,12 @@ var OAuth=require('oauth').OAuth;
 var twitter=require('ntwitter');
 var io=require('socket.io').listen(8081, {log: false});
 var sentiment=require('sentiment');
+var TweetsProvider=require('./mongoConnector.js').TweetsProvider;
+
 
 var app=express();
 
+var mongoGrab=new TweetsProvider('127.0.0.1', 27017);
 
 //Custom middleware to replace body parser
 function rawBody(req, res, next) {
@@ -100,7 +103,15 @@ app.post('/getTweets', function(req, res)
 
 app.post('/getQuiz', function(req, res){
 	console.log("Got that quiz");
+
+  var query="{\"sentiment\": {\"$ne\": 0}}";
+  query=JSON.parse(query);
+  mongoGrab.findAll(JSON.stringify(query), function(error, tweets){
+  	console.log("Found something: ", tweets);
+  });
+
 	io.sockets.emit("Got that quiz!");
+
 });
 
 /********************TWITTER OAUTH****************************/

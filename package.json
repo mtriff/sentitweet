@@ -13,6 +13,8 @@
     "ntwitter":"*",
     "oauth":"*",
     "sentiment":"*",
-    "file":"*"
+    "file":"*",
+    "line-by-line":"*",
+    "mongodb":"*"
   }
 }
