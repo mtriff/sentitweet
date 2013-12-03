@@ -108,9 +108,9 @@ app.post('/getQuiz', function(req, res){
   query=JSON.parse(query);
   mongoGrab.findAll(JSON.stringify(query), function(error, tweets){
   	console.log("Found something: ", tweets);
+  	io.sockets.emit('newTweet', tweets[0]);
   });
 
-	io.sockets.emit("Got that quiz!");
 
 });
 

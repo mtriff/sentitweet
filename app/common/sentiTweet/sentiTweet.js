@@ -38,6 +38,7 @@ app.controller('BrowseCtrl', function($scope, theServer)
 			console.log('Adding a listener');
 			socket.on('newTweet', function(theTweet)
 			{
+				console.log(theTweet);
 				$scope.tweets.unshift(theTweet);
 				$scope.$apply();
 			});
