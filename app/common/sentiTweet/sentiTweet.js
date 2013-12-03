@@ -2,12 +2,26 @@ var app=angular.module('sentiTweets', []);
 
 app.controller('BrowseCtrl', function($scope, theServer)
 {
+	/**DEMOVAR**/
+	var aug=0;
+	answersArr=[];
+	$(".btn-group > button.btn").on("click", function(){
+  	answersArr[aug] = +this.innerHTML;
+	});
+
+	$scope.getResults=function(index)
+		{
+			return answersArr[index];
+		}
+	/**DEMOVAR**/
+
 
 	/*Controls which menu is showing*/
 	var isStreaming=true; //Prompt for the user to browse tweets
 	var isQuiz=false; //Prompt to start the testing
 	var isTweets=true; //Div showing all of the tweets
 	var isAnswers=false; //Div prompting user to enter their answers
+	var isResults=false; //Div containing results comparison
 
 	$scope.stream=function()
 	{
@@ -27,6 +41,11 @@ app.controller('BrowseCtrl', function($scope, theServer)
 	$scope.answers=function()
 	{
 		return isAnswers;
+	}
+
+	$scope.results=function()
+	{
+		return isResults;
 	}
 
 	$scope.showQuiz=function()
@@ -62,7 +81,7 @@ app.controller('BrowseCtrl', function($scope, theServer)
 	}
 
 	/*Visual Augmentation*/
-	var visual=true;
+	var visual=false;
 
 	$scope.visAug=function(sentiment)
 	{
@@ -104,6 +123,25 @@ app.controller('BrowseCtrl', function($scope, theServer)
 	/* Controls Receiving Tweets */
 	$scope.trackTweets=function()
 	{
+		/**DEMOVAR**/
+		//var activebtnvalue = $("#answerGroup").find("button.active").prop('value');
+		console.log(answersArr);
+		if(aug==1)
+		{
+			visual=true;
+		}
+		else if(aug==2)
+		{
+			visual=false;
+			audio=true;
+		}
+		aug++;
+
+
+		if(aug<4)
+		{
+		/**DEMOVAR**/
+
 		$("html, body").scrollTop($("#tweetStream").offset().top);
 		console.log('Called BrowseCtrl');
 		$scope.tweets=[];
@@ -121,7 +159,7 @@ app.controller('BrowseCtrl', function($scope, theServer)
 			{
 				isQuiz=false;
 				$scope.showTweetsDiv();
-				console.log(theTweet);
+				//console.log(theTweet);
 				
 				if(audio)
 				{
@@ -149,6 +187,15 @@ app.controller('BrowseCtrl', function($scope, theServer)
 			console.log("getQuiz");
 			theServer.getQuiz(1);
 		}
+
+		/**DEMOVAR**/
+		}
+		else
+		{
+			isResults=true;
+		}
+		/**DEMOVAR**/
+
 	};
 
 	$scope.stopTracking=function()

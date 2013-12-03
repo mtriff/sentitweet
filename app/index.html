@@ -42,7 +42,7 @@
 
 
 			<div id="quiz1" ng-show="quiz()">
-				<p>You will be shown a stream of approximately 15 seconds worth of tweets, as they would appear in real time, your goal is to best identify the overall (average) sentiment of the group of tweets.</p>
+				<p>You will be shown a stream of approximately 5 seconds worth of tweets, as they would appear in real time, your goal is to best identify the overall (average) sentiment of the group of tweets.</p>
 				<br>
 				<p>You will rank the tweets on a scale of one to ten, with 1 being very negative, 10 being very positive, and 5 being neutral.</p>
 				<br>
@@ -52,21 +52,40 @@
 
 			<div id="answers" ng-show="answers()">
 				<span class="label label-primary">Negative</span>
-				<div class="btn-group">
-				  <button type="button" class="btn btn-default">1</button>
-				  <button type="button" class="btn btn-default">2</button>
-				  <button type="button" class="btn btn-default">3</button>
-				  <button type="button" class="btn btn-default">4</button>
-				  <button type="button" class="btn btn-default">5</button>
-				  <button type="button" class="btn btn-default">6</button>
-				  <button type="button" class="btn btn-default">7</button>
-				  <button type="button" class="btn btn-default">8</button>
-				  <button type="button" class="btn btn-default">9</button>
-				  <button type="button" class="btn btn-default">10</button>
+				<div class="btn-group" id="answerGroup">
+				  <button type="button" class="btn btn-default" value="1">1</button>
+				  <button type="button" class="btn btn-default" value="2">2</button>
+				  <button type="button" class="btn btn-default" value="3">3</button>
+				  <button type="button" class="btn btn-default" value="4">4</button>
+				  <button type="button" class="btn btn-default" value="5">5</button>
+				  <button type="button" class="btn btn-default" value="6">6</button>
+				  <button type="button" class="btn btn-default" value="7">7</button>
+				  <button type="button" class="btn btn-default" value="8">8</button>
+				  <button type="button" class="btn btn-default" value="9">9</button>
+				  <button type="button" class="btn btn-default" value="10">10</button>
 				</div>
 				<span class="label label-success">Positive</span>
 				<br>
 				<button class="btn btn-success" ng-click="trackTweets()">Next Trial</button>
+			</div>
+
+			<div id="results" ng-show="results()">
+				<h2>The Average Sentiment Was</h2>
+				<h1>5.71</h1>
+				<table>
+					<tr>
+						<td>No Augmentation</td>
+						<td>{{getResults(1)}}</td>
+					</tr>
+					<tr>
+						<td>Visual Augmentation</td>
+						<td>{{getResults(2)}}</td>
+					</tr>
+					<tr>
+						<td>Audio Augmentation</td>
+						<td>{{getResults(3)}}</td>
+					</tr>
+				</table>
 			</div>
 
 	</div>
