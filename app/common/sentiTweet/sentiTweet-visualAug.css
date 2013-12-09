@@ -1,3 +1,8 @@
+.col-centered{
+    float: none;
+    margin: 0 auto;
+}
+
 /*Visual Styles to Augment tweet output*/
 pre[sentiment="10"]
 {

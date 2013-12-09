@@ -102,18 +102,18 @@ app.post('/getTweets', function(req, res)
 });
 
 app.post('/getQuiz', function(req, res){
-	console.log("Got that quiz");
 
-  var query="{\"sentiment\": {\"$ne\": 0}}";
-  query=JSON.parse(query);
-  mongoGrab.findAll(JSON.stringify(query), function(error, tweets){
+	var raw=JSON.parse(req.rawBody);
+  var mongoReq="{\"collection\":\"quiz"+raw.data+"\"}";
+  
+  mongoGrab.findAll(mongoReq, function(error, tweets){
   	//console.log("Found something: ", tweets);
   	var baseTime=tweets[0].time;
   	var baseNow=Date.now();
   	for(var i=0; i<tweets.length; i++)
   	{
   		/*Emit each tweet to the caller on specified time
-  		augmented by an offset of 20msec per tweet, to allow
+  		augmented by an offset of 50msec per tweet, to allow
   		the page to render at a reasonable rate */
   		(function(data, length,curr) {
 			  setTimeout(function() {
