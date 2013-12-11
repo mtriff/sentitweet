@@ -2,8 +2,11 @@ var app=angular.module('sentiTweets', []);
 
 app.controller('BrowseCtrl', function($scope, theServer)
 {
-	/**DEMOVAR**/
 	var aug=0;
+	var quizNum=1;
+	var average=-1;
+	var MAXQUIZNUM=2;
+
 	answersArr=[];
 	$(".btn-group > button.btn").on("click", function(){
   	answersArr[aug] = +this.innerHTML;
@@ -13,8 +16,11 @@ app.controller('BrowseCtrl', function($scope, theServer)
 		{
 			return answersArr[index];
 		}
-	/**DEMOVAR**/
 
+	$scope.printAverage=function()
+	{
+		return (average+5).toFixed(2);
+	}
 
 	/*Controls which menu is showing*/
 	var isStreaming=true; //Prompt for the user to browse tweets
@@ -120,13 +126,25 @@ app.controller('BrowseCtrl', function($scope, theServer)
 	url[-9]=['assets/sounds/c002.mp3','assets/sounds/c002.ogg'];
 	url[-10]=['assets/sounds/c001.mp3','assets/sounds/c001.ogg'];
 	
+	$scope.playSound=function(index)
+	{
+		if(index>-11 && index<11)
+		{
+			var played=new Howl({urls: url[index]}).play()
+		}
+	}
+
 	/* Controls Receiving Tweets */
 	$scope.trackTweets=function()
 	{
 		/**DEMOVAR**/
 		//var activebtnvalue = $("#answerGroup").find("button.active").prop('value');
 		console.log(answersArr);
-		if(aug==1)
+		if(aug==0)
+		{
+			theServer.getAverage(quizNum);
+		}
+		else if(aug==1)
 		{
 			visual=true;
 		}
@@ -137,11 +155,8 @@ app.controller('BrowseCtrl', function($scope, theServer)
 		}
 		aug++;
 
-
-		if(aug<4)
+		if(aug<4 && quizNum<=MAXQUIZNUM)
 		{
-		/**DEMOVAR**/
-
 		$("html, body").scrollTop($("#tweetStream").offset().top);
 		console.log('Called BrowseCtrl');
 		$scope.tweets=[];
@@ -172,8 +187,16 @@ app.controller('BrowseCtrl', function($scope, theServer)
 
 			socket.on('doneQuiz', function(data)
 			{
+				console.log("DONEQUIZ");
 				$scope.showAnswers();
 				$scope.$apply();
+			});
+
+			socket.on('gotAverage', function(ave)
+			{
+				console.log("gotAverage");
+				console.log(ave);
+				average=ave.average;
 			});
 		}
 
@@ -184,18 +207,24 @@ app.controller('BrowseCtrl', function($scope, theServer)
 		}
 		else
 		{
-			console.log("getQuiz");
-			theServer.getQuiz(1);
+			console.log("getQuiz:"+quizNum);
+			theServer.getQuiz(quizNum);
 		}
 
-		/**DEMOVAR**/
+
+		}
+		else if(aug>3 && quizNum<=MAXQUIZNUM)
+		{
+			/*Reset the augmentation for the next quiz set*/
+			aug=0;
+			audio=false;
+			quizNum++;
 		}
 		else
 		{
+			/*Must be done the last augmentation of the last quiz now*/
 			isResults=true;
 		}
-		/**DEMOVAR**/
-
 	};
 
 	$scope.stopTracking=function()
@@ -233,7 +262,7 @@ app.controller('BrowseCtrl', function($scope, theServer)
 		getQuiz: function(number)
 		{
 			var deferred=$q.defer();
-			$http.post('/getQuiz', {data: 1}).success(function(data) {
+			$http.post('/getQuiz', {data: number}).success(function(data) {
 				console.log(data);
 				deferred.resolve(data)
 			}).error(function()
@@ -241,6 +270,18 @@ app.controller('BrowseCtrl', function($scope, theServer)
 				deferred.reject();
 			});
 			return deferred.promise;
+		},
+		getAverage: function(number)
+		{
+			var deferred=$q.defer();
+			$http.post('/getQuizAve', {data: number}).success(function(data) {
+				console.log(data);
+				deferred.resolve(data)
+			}).error(function()
+			{
+				deferred.reject();
+			});
+			return deferred.promise;			
 		}
 	}
 });

@@ -102,10 +102,15 @@ app.post('/getTweets', function(req, res)
 });
 
 app.post('/getQuiz', function(req, res){
-
+	console.log("Got that quiz");
 	var raw=JSON.parse(req.rawBody);
-  var mongoReq="{\"collection\":\"quiz"+raw.data+"\"}";
-  
+  var query="{\"sentiment\": {\"$ne\": 0}}";
+  console.log(req.rawBody);
+
+  //var mongoReq="{\"collection\":\"quiz"+raw.data+"\"}";
+  var mongoReq="{\"collection\":\"riders\"}";
+  console.log(mongoReq);
+  query=JSON.parse(query);
   mongoGrab.findAll(mongoReq, function(error, tweets){
   	//console.log("Found something: ", tweets);
   	var baseTime=tweets[0].time;
@@ -128,6 +133,19 @@ app.post('/getQuiz', function(req, res){
   	}
   	
   });
+});
+
+app.post('/getQuizAve', function(req, res){
+	var raw=JSON.parse(req.rawBody);
+
+	//var mongoReq="{\"collection\":\"quiz"+raw.data+"\"}";
+  var mongoReq="{\"collection\":\"riders\"}";
+
+  mongoGrab.getAverage(mongoReq, function(error, averages){
+  	console.log("got average");
+  	io.sockets.emit('gotAverage', averages[0]);
+  });
+
 });
 
 /********************TWITTER OAUTH****************************/
