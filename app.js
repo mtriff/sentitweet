@@ -14,6 +14,7 @@ var io=require('socket.io').listen(8081, {log: false});
 var sentiment=require('sentiment');
 var TweetsProvider=require('./mongoConnector.js').TweetsProvider;
 var async=require('async');
+var fs=require('fs');
 
 var app=express();
 
@@ -148,6 +149,14 @@ app.post('/getQuizAve', function(req, res){
   	io.sockets.emit('gotAverage', averages[0]);
   });
 
+});
+
+app.post('/writeResults', function(req, res){
+	var raw=JSON.parse(req.rawBody);
+	fs.appendFile('answers.json', JSON.stringify(raw.data)+"\n", function (err) {
+		console.log(err);
+	});
+	res.send("Answers written.");
 });
 
 /********************TWITTER OAUTH****************************/

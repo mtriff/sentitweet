@@ -238,6 +238,10 @@ app.controller('BrowseCtrl', function($scope, theServer)
 		}
 		else if(aug>3 && quizNum<=MAXQUIZNUM)
 		{
+			resultsToSend={};
+			resultsToSend.ans=answersArr.slice(1,4);
+			resultsToSend.quiz=quizNum;
+			theServer.writeResults(resultsToSend);
 			/*Reset the augmentation for the next quiz set*/
 			aug=0;
 			audio=false;
@@ -298,7 +302,21 @@ app.controller('BrowseCtrl', function($scope, theServer)
 				console.log("REJECTED");
 				deferred.reject();
 			});
-			console.log("After getQuiz post");
+			deferred.resolve();
+			return deferred.promise;
+		},
+		writeResults: function(resultsData)
+		{
+			var deferred=$q.defer();
+			console.log("Writing results to file..");
+			$http.post('/writeResults', {data: resultsData}, {timeout: deferred.resolve}).success(function(data) {
+				console.log(data);
+				deferred.resolve(data)
+			}).error(function()
+			{
+				console.log("REJECTED");
+				deferred.reject();
+			});
 			deferred.resolve();
 			return deferred.promise;
 		}/*,
