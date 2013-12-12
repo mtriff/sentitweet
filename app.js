@@ -107,39 +107,41 @@ app.post('/getQuiz', function(req, res){
   var query="{\"sentiment\": {\"$ne\": 0}}";
   console.log(req.rawBody);
 
-  //var mongoReq="{\"collection\":\"quiz"+raw.data+"\"}";
-  var mongoReq="{\"collection\":\"riders\"}";
+  var mongoReq="{\"collection\":\"quiz"+raw.data+"\"}";
+  //var mongoReq="{\"collection\":\"riders\"}";
   console.log(mongoReq);
   query=JSON.parse(query);
   mongoGrab.findAll(mongoReq, function(error, tweets){
   	//console.log("Found something: ", tweets);
   	var baseTime=tweets[0].time;
   	var baseNow=Date.now();
-  	for(var i=0; i<tweets.length; i++)
+  	for(var i= 0; i<tweets.length; i++)
   	{
   		/*Emit each tweet to the caller on specified time
   		augmented by an offset of 50msec per tweet, to allow
   		the page to render at a reasonable rate */
   		(function(data, length,curr) {
 			  setTimeout(function() {
-			  	io.sockets.emit('newTweet', data)
+			  	io.sockets.emit('newTweet', data);
 			  	if(curr==length-1)
 			  	{
 			  		console.log("DONE THIS QUIZ");
 			  		io.sockets.emit('doneQuiz', {});
 			  	}
-			  }, data.time+(50*i)-baseTime);
+			  //}, data.time+(50*i)-baseTime);
+				}, (50*i));
 			 })(tweets[i],tweets.length,i);
   	}
   	
   });
+  res.send("test");
 });
 
 app.post('/getQuizAve', function(req, res){
 	var raw=JSON.parse(req.rawBody);
 
-	//var mongoReq="{\"collection\":\"quiz"+raw.data+"\"}";
-  var mongoReq="{\"collection\":\"riders\"}";
+	var mongoReq="{\"collection\":\"quiz"+raw.data+"\"}";
+  //var mongoReq="{\"collection\":\"riders\"}";
 
   mongoGrab.getAverage(mongoReq, function(error, averages){
   	console.log("got average");

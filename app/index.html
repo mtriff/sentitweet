@@ -7,8 +7,8 @@
 
 	<script rel="stylesheet" src="common/jquery/jquery-1.10.2.min.js"></script>
 	<script src="common/twitterBootstrap/bootstrap.js"></script>
-	<!--script src="common/angularjs/angular.js"></script-->
-   <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.3/angular.min.js"></script>
+	<script src="common/angularjs/angular.js"></script>
+   <!--script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.3/angular.min.js"></script-->
    <script src="common/howlerjs/howler.js"></script>
    <script type="text/javascript" src="common/socketIO/socket.io.js"></script>
 	<script src="common/sentiTweet/sentiTweet.js"></script>
@@ -110,6 +110,8 @@
 						<td>{{getResults(3)}}</td>
 					</tr>
 				</table>
+				<br>
+				<button class="btn btn-success" ng-click="trackTweets()">Next Trial</button>
 			</div>
 
 	</div>
