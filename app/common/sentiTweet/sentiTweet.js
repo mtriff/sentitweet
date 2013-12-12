@@ -27,7 +27,7 @@ app.controller('BrowseCtrl', function($scope, theServer)
 
 	$scope.printAverage=function()
 	{
-		return (averages[quizNum]+5).toFixed(2);
+		return (averages[quizNum-1]+5).toFixed(2);
 	}
 
 	/*Controls which menu is showing*/
