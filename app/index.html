@@ -7,8 +7,8 @@
 
 	<script rel="stylesheet" src="common/jquery/jquery-1.10.2.min.js"></script>
 	<script src="common/twitterBootstrap/bootstrap.js"></script>
-	<!--script src="common/angularjs/angular.js"></script-->
-   <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.3/angular.min.js"></script>
+	<script src="common/angularjs/angular.js"></script>
+   <!--script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.3/angular.min.js"></script-->
    <script src="common/howlerjs/howler.js"></script>
    <script type="text/javascript" src="common/socketIO/socket.io.js"></script>
 	<script src="common/sentiTweet/sentiTweet.js"></script>
@@ -47,10 +47,34 @@
 				<p>You will rank the tweets on a scale of one to ten, with 1 being very negative, 10 being very positive, and 5 being neutral.</p>
 				<br>
 				<p>You will be shown the groups of tweets with three different augmentations, text-only, text+visual, and text+audio</p>
+				<br>
+				<p>The following are examples of the visual and audio augmentations.  The colours demonstrate the spectrum of sentiments, from negative to positive.  Clicking on each section will play the audio augmentation associated with that level of sentiment.</p>
+				<pre sentiment="10" style="color:white;" ng-click="playSound(10)">Very Positive Sentiment</pre>
+				<pre sentiment="9" ng-click="playSound(9)"></pre>				
+				<pre sentiment="8" ng-click="playSound(8)"></pre>			
+				<pre sentiment="7" ng-click="playSound(7)"></pre>			
+				<pre sentiment="6" ng-click="playSound(6)"></pre>
+				<pre sentiment="5" ng-click="playSound(5)"></pre>		
+				<pre sentiment="4" ng-click="playSound(4)"></pre>			
+				<pre sentiment="3" ng-click="playSound(3)"></pre>			
+				<pre sentiment="2" ng-click="playSound(2)"></pre>
+				<pre sentiment="1" ng-click="playSound(1)"></pre>
+				<pre sentiment="-1" ng-click="playSound(-1)"></pre>
+				<pre sentiment="-2" ng-click="playSound(-2)"></pre>
+				<pre sentiment="-3" ng-click="playSound(-3)"></pre>			
+				<pre sentiment="-4" ng-click="playSound(-4)"></pre>			
+				<pre sentiment="-5" ng-click="playSound(-5)"></pre>		
+				<pre sentiment="-6" ng-click="playSound(-6)"></pre>
+				<pre sentiment="-7" ng-click="playSound(-7)"></pre>			
+				<pre sentiment="-8" ng-click="playSound(-8)"></pre>			
+				<pre sentiment="-9" ng-click="playSound(-9)"></pre>				
+				<pre sentiment="-10" style="color:white;" ng-click="playSound(-10)">Very Negative Sentiment</pre>
+
 				<button class="btn btn-success" ng-click="trackTweets()">Begin</button>
 			</div>
 
 			<div id="answers" ng-show="answers()">
+				<p>Please enter your prediction of the sentiment of the previous group of tweets:</p>
 				<span class="label label-primary">Negative</span>
 				<div class="btn-group" id="answerGroup">
 				  <button type="button" class="btn btn-default" value="1">1</button>
@@ -71,7 +95,7 @@
 
 			<div id="results" ng-show="results()">
 				<h2>The Average Sentiment Was</h2>
-				<h1>5.71</h1>
+				<h1>{{printAverage()}}</h1>
 				<table>
 					<tr>
 						<td>No Augmentation</td>
@@ -86,6 +110,8 @@
 						<td>{{getResults(3)}}</td>
 					</tr>
 				</table>
+				<br>
+				<button class="btn btn-success" ng-click="trackTweets()">Next Trial</button>
 			</div>
 
 	</div>

@@ -2,8 +2,11 @@ var app=angular.module('sentiTweets', []);
 
 app.controller('BrowseCtrl', function($scope, theServer)
 {
-	/**DEMOVAR**/
 	var aug=0;
+	var quizNum=1;
+	$scope.average=-1;
+	var MAXQUIZNUM=6;
+
 	answersArr=[];
 	$(".btn-group > button.btn").on("click", function(){
   	answersArr[aug] = +this.innerHTML;
@@ -13,8 +16,19 @@ app.controller('BrowseCtrl', function($scope, theServer)
 		{
 			return answersArr[index];
 		}
-	/**DEMOVAR**/
 
+	var averages=new Array();
+	averages[1]=1.92;
+	averages[2]=0.595;
+	averages[3]=-1.33;
+	averages[4]=-0.725;
+	averages[5]=1.92;
+	averages[6]=0.86;
+
+	$scope.printAverage=function()
+	{
+		return (averages[quizNum-1]+5).toFixed(2);
+	}
 
 	/*Controls which menu is showing*/
 	var isStreaming=true; //Prompt for the user to browse tweets
@@ -120,12 +134,19 @@ app.controller('BrowseCtrl', function($scope, theServer)
 	url[-9]=['assets/sounds/c002.mp3','assets/sounds/c002.ogg'];
 	url[-10]=['assets/sounds/c001.mp3','assets/sounds/c001.ogg'];
 	
+	$scope.playSound=function(index)
+	{
+		if(index>-11 && index<11)
+		{
+			var played=new Howl({urls: url[index]}).play()
+		}
+	}
+
 	/* Controls Receiving Tweets */
 	$scope.trackTweets=function()
 	{
 		/**DEMOVAR**/
 		//var activebtnvalue = $("#answerGroup").find("button.active").prop('value');
-		console.log(answersArr);
 		if(aug==1)
 		{
 			visual=true;
@@ -135,15 +156,10 @@ app.controller('BrowseCtrl', function($scope, theServer)
 			visual=false;
 			audio=true;
 		}
+
 		aug++;
 
-
-		if(aug<4)
-		{
-		/**DEMOVAR**/
-
 		$("html, body").scrollTop($("#tweetStream").offset().top);
-		console.log('Called BrowseCtrl');
 		$scope.tweets=[];
 
 		if(typeof socket === 'undefined')
@@ -151,12 +167,29 @@ app.controller('BrowseCtrl', function($scope, theServer)
 			var socket=io.connect('http://localhost:8081');
 			window.socket=socket;
 		}
+		
+		/*
+		if(socket.listeners('gotAverage').length==0)
+		{
+			console.log('Adding gotAverage Listener');
+
+			socket.on('gotAverage', function(ave)
+			{
+				console.log("gotAverage");
+				console.log(ave);
+				$scope.average=ave.average;
+				$scope.$apply();
+			});
+		}
+		*/
 
 		if(socket.listeners('newTweet').length==0)
 		{
 			console.log('Adding a listener');
+
 			socket.on('newTweet', function(theTweet)
 			{
+				//console.log("Got tweet, quiz:"+quizNum+" aug:"+aug);
 				isQuiz=false;
 				$scope.showTweetsDiv();
 				//console.log(theTweet);
@@ -169,33 +202,60 @@ app.controller('BrowseCtrl', function($scope, theServer)
 				$scope.tweets.unshift(theTweet);
 				$scope.$apply();
 			});
+		}
 
+		if(socket.listeners('doneQuiz').length==0)
+		{
 			socket.on('doneQuiz', function(data)
 			{
+				console.log("DONEQUIZ");
 				$scope.showAnswers();
 				$scope.$apply();
 			});
 		}
 
-		if(isStreaming)
+		console.log(answersArr);
+		/*if(aug==1)
 		{
-			console.log("getTweets with: "+$scope.hashTag);
-			theServer.getTweets($scope.hashTag);
-		}
-		else
-		{
-			console.log("getQuiz");
-			theServer.getQuiz(1);
-		}
+			console.log("Sending for avg");
+			//theServer.getAverage(quizNum);
+		}*/
 
-		/**DEMOVAR**/
-		}
-		else
+		if(aug<4 && quizNum<=MAXQUIZNUM)
 		{
+			isResults=false;
+			console.log("isStreaming? - "+isStreaming);
+			if(isStreaming)
+			{
+				console.log("getTweets with: "+$scope.hashTag);
+				theServer.getTweets($scope.hashTag);
+			}
+			else
+			{
+				console.log("getQuiz:"+quizNum);
+				theServer.getQuiz(quizNum);
+			}
+		}
+		else if(aug>3 && quizNum<=MAXQUIZNUM)
+		{
+			resultsToSend={};
+			resultsToSend.ans=answersArr.slice(1,4);
+			resultsToSend.quiz=quizNum;
+			theServer.writeResults(resultsToSend);
+			/*Reset the augmentation for the next quiz set*/
+			aug=0;
+			audio=false;
+			//quizNum++;
+			quizNum++;
+			isAnswers=false;			
 			isResults=true;
 		}
-		/**DEMOVAR**/
-
+		else
+		{
+			/*Must be done the last augmentation of the last quiz now*/
+			alert('All done! Thank you!');
+		}
+		console.log("Aug is: "+aug);
 	};
 
 	$scope.stopTracking=function()
@@ -233,14 +293,44 @@ app.controller('BrowseCtrl', function($scope, theServer)
 		getQuiz: function(number)
 		{
 			var deferred=$q.defer();
-			$http.post('/getQuiz', {data: 1}).success(function(data) {
+			console.log("Server getting quiz "+number);
+			$http.post('/getQuiz', {data: number}, {timeout: deferred.resolve}).success(function(data) {
+				console.log(data);
+				deferred.resolve(data)
+			}).error(function()
+			{
+				console.log("REJECTED");
+				deferred.reject();
+			});
+			deferred.resolve();
+			return deferred.promise;
+		},
+		writeResults: function(resultsData)
+		{
+			var deferred=$q.defer();
+			console.log("Writing results to file..");
+			$http.post('/writeResults', {data: resultsData}, {timeout: deferred.resolve}).success(function(data) {
+				console.log(data);
+				deferred.resolve(data)
+			}).error(function()
+			{
+				console.log("REJECTED");
+				deferred.reject();
+			});
+			deferred.resolve();
+			return deferred.promise;
+		}/*,
+		getAverage: function(number)
+		{
+			var deferred=$q.defer();
+			$http.post('/getQuizAve', {data: number}).success(function(data) {
 				console.log(data);
 				deferred.resolve(data)
 			}).error(function()
 			{
 				deferred.reject();
 			});
-			return deferred.promise;
-		}
+			return deferred.promise;			
+		}*/
 	}
 });
